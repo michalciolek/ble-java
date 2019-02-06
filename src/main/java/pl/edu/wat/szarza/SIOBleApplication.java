@@ -1,31 +1,25 @@
-package example;
+package pl.edu.wat.szarza;
 
-import it.tangodev.ble.BleApplication;
-import it.tangodev.ble.BleApplicationListener;
-import it.tangodev.ble.BleCharacteristic;
+import it.tangodev.ble.*;
 import it.tangodev.ble.BleCharacteristic.CharacteristicFlag;
-import it.tangodev.ble.BleCharacteristicListener;
-import it.tangodev.ble.BleService;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.freedesktop.dbus.exceptions.DBusException;
-
-public class ExampleMain implements Runnable {
-	
-	protected String valueString = "Ciao ciao";
+public class SIOBleApplication {
+	private String characteristicValue = "auth";
 	private BleApplication app;
 	private BleService service;
 	private BleCharacteristic characteristic;
 
 	public void notifyBle(String value) {
-		this.valueString = value;
+		this.characteristicValue = value;
 		characteristic.sendNotification();
 	}
 	
-	public ExampleMain() throws DBusException, InterruptedException {
+	public SIOBleApplication() throws DBusException, InterruptedException {
 		BleApplicationListener appListener = new BleApplicationListener() {
 			@Override
 			public void deviceDisconnected() {
@@ -48,7 +42,7 @@ public class ExampleMain implements Runnable {
 			@Override
 			public void setValue(byte[] value) {
 				try {
-					valueString = new String(value, StandardCharsets.UTF_8);
+					characteristicValue = new String(value, StandardCharsets.UTF_8);
 				} catch(Exception e) {
 					System.out.println("");
 				}
@@ -57,7 +51,7 @@ public class ExampleMain implements Runnable {
 			@Override
 			public byte[] getValue() {
 				try {
-					return valueString.getBytes(StandardCharsets.UTF_8);
+					return characteristicValue.getBytes(StandardCharsets.UTF_8);
 				} catch(Exception e) {
 					throw new RuntimeException(e);
 				}
@@ -65,19 +59,8 @@ public class ExampleMain implements Runnable {
 		});
 		service.addCharacteristic(characteristic);
 		app.addService(service);
-		
-		ExampleCharacteristic exampleCharacteristic = new ExampleCharacteristic(service);
-		service.addCharacteristic(exampleCharacteristic);
-		app.start();
-	}
 
-	@Override
-	public void run() {
-		try {
-			this.wait();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		app.start();
 	}
 
 	public BleApplication getApp() {
@@ -85,18 +68,22 @@ public class ExampleMain implements Runnable {
 	}
 
 	public static void main(String[] args) throws DBusException, InterruptedException {
-		ExampleMain example = new ExampleMain();
-		System.out.println("");
-//		Thread t = new Thread(example);
-//		t.start();
-//		Thread.sleep(15000);
-		example.notifyBle("woooooo");
-//		Thread.sleep(15000);
-//		t.notify();
+		SIOBleApplication SIOBleApplication = new SIOBleApplication();
 
-//		Thread.sleep(5000);
-//		System.out.println("stopping application");
-		example.getApp().stop();
+		int i = 0;
+		while (true) {
+			Thread.sleep(6000);
+			System.out.println("notify" +i);
+			SIOBleApplication.notifyBle("auth "+i);
+			i++;
+
+			if (i > 9999999) {
+				break;
+			}
+		}
+
+		System.out.println("Stopping application");
+		SIOBleApplication.getApp().stop();
 		System.out.println("Application stopped");
 	}
 	

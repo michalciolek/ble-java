@@ -16,7 +16,7 @@
 1. Java 8 or better
 2. BlueZ 5.43 or better
 3. d-bus Java library `libdbus-java`
-Raspbian example:
+Raspbian pl.edu.wat.szarza:
 ```
 sudo apt-get install
 ```
@@ -31,9 +31,19 @@ Clone the repository and build with Gradle (4.5 or higher):
 gradle build
 ```
 
-# Example
-You could see the main `MainExample.java` in `src/test/java/example`.
-It's a sample main that create a BLE Application with one Service and 2 Characteristic.
+# Application
+You could see the SIOBleaApplication `SIOBleApplication.java` in `src/test/java/pl.edu.wat.szarza`.
+It's a application that create a BLE Application with one Service and 1 Characteristic.
+
+## Build
+```
+./gradlew jar
+```
+
+## Run on RPi
+```
+sudo java -jar build/libs/ble-java-0.1.jar
+```
 
 # BlueZ compatibility
 Until now is tested with BlueZ 5.46 on Raspbian distribution.

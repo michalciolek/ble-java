@@ -31,6 +31,12 @@ repositories {
 jar {
     manifest {
         attributes('Implementation-Title': project.name,
-                   'Implementation-Version': project.version)
+                'Implementation-Version': project.version,
+                'Main-Class': 'pl.edu.wat.szarza.SIOBleApplication')
+    }
+
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
